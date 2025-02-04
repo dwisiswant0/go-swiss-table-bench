@@ -1,16 +1,79 @@
-$ go test -bench=. -benchmem -benchtime 5s
+$ go test -bench=. -benchmem 
 goos: linux
 goarch: amd64
 pkg: swiss_table
 cpu: 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz
-BenchmarkPut/concurrent-swiss-map-16         	   74023	     80565 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPut/cockroachdb-16                  	  412298	     14456 ns/op	       0 B/op	       0 allocs/op
-BenchmarkPut/dolthub-16                      	  199984	     29748 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGet/concurrent-swiss-map-16         	86112866	        66.05 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGet/cockroachdb-16                  	396088783	        15.19 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGet/dolthub-16                      	239704557	        24.63 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDelete/concurrent-swiss-map-16      	100000000	        59.62 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDelete/cockroachdb-16               	405566287	        14.57 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDelete/dolthub-16                   	154245849	        39.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/100000/std-16     	     225	   5257769 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/100000/concurrent-swiss-map-16         	      87	  13345568 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/100000/cockroachdb-16                  	     303	   3812479 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/100000/dolthub-16                      	     262	   4547738 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/500000/std-16                          	      32	  36381503 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/500000/concurrent-swiss-map-16         	      10	 108905317 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/500000/cockroachdb-16                  	      30	  36813367 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/500000/dolthub-16                      	      25	  40388212 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/1000000/std-16                         	      13	  84850484 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/1000000/concurrent-swiss-map-16        	       4	 313255049 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/1000000/cockroachdb-16                 	      12	 102724924 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/1000000/dolthub-16                     	      15	  98028732 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/2500000/std-16                         	       4	 251355304 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/2500000/concurrent-swiss-map-16        	       1	1512145098 ns/op	209845248 B/op	     832 allocs/op
+BenchmarkPut/2500000/cockroachdb-16                 	       4	 280210746 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/2500000/dolthub-16                     	       4	 344260503 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/5000000/std-16                         	       1	2313756160 ns/op	495368216 B/op	  153291 allocs/op
+BenchmarkPut/5000000/concurrent-swiss-map-16        	       1	3350693491 ns/op	419560448 B/op	     896 allocs/op
+BenchmarkPut/5000000/cockroachdb-16                 	       2	 604374576 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/5000000/dolthub-16                     	       2	 841514168 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/10000000/std-16                        	       1	3887079002 ns/op	990759944 B/op	  306759 allocs/op
+BenchmarkPut/10000000/concurrent-swiss-map-16       	       1	7761169372 ns/op	838990848 B/op	     960 allocs/op
+BenchmarkPut/10000000/cockroachdb-16                	       1	1145777783 ns/op	       0 B/op	       0 allocs/op
+BenchmarkPut/10000000/dolthub-16                    	       1	1697815288 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/100000/std-16                          	19293207	        62.09 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/100000/concurrent-swiss-map-16         	 9471030	       126.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/100000/cockroachdb-16                  	28793872	        36.46 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/100000/dolthub-16                      	30267217	        41.51 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/500000/std-16                          	 9106165	       117.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/500000/concurrent-swiss-map-16         	 5171284	       266.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/500000/cockroachdb-16                  	11681103	        92.58 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/500000/dolthub-16                      	14464894	        79.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/1000000/std-16                         	12673189	        91.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/1000000/concurrent-swiss-map-16        	 4409600	       298.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/1000000/cockroachdb-16                 	10039633	       125.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/1000000/dolthub-16                     	 7092668	       141.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/2500000/std-16                         	13875952	       102.9 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/2500000/concurrent-swiss-map-16        	 4595648	       321.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/2500000/cockroachdb-16                 	11125525	       119.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/2500000/dolthub-16                     	10119091	       133.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/5000000/std-16                         	14880657	       115.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/5000000/concurrent-swiss-map-16        	 4605043	       382.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/5000000/cockroachdb-16                 	11273173	       137.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/5000000/dolthub-16                     	 8804168	       147.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/10000000/std-16                        	12919872	       138.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/10000000/concurrent-swiss-map-16       	 4639483	       325.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/10000000/cockroachdb-16                	10543586	       134.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGet/10000000/dolthub-16                    	 7038726	       165.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/100000/std-16                       	268274686	         4.435 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/100000/concurrent-swiss-map-16      	16223246	        69.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/100000/cockroachdb-16               	21534744	        57.57 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/100000/dolthub-16                   	19991982	        59.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/500000/std-16                       	242335474	         4.491 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/500000/concurrent-swiss-map-16      	18921589	        63.50 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/500000/cockroachdb-16               	26270464	        44.40 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/500000/dolthub-16                   	15951232	        65.52 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/1000000/std-16                      	230223174	         4.730 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/1000000/concurrent-swiss-map-16     	17782335	        69.40 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/1000000/cockroachdb-16              	19690153	        61.15 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/1000000/dolthub-16                  	16987323	        70.42 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/2500000/std-16                      	256938216	         4.759 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/2500000/concurrent-swiss-map-16     	15583966	        85.72 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/2500000/cockroachdb-16              	12425558	        89.94 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/2500000/dolthub-16                  	12207170	        82.20 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/5000000/std-16                      	253136625	         4.687 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/5000000/concurrent-swiss-map-16     	 3921649	       306.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/5000000/cockroachdb-16              	10417237	       122.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/5000000/dolthub-16                  	 7481720	       138.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/10000000/std-16                     	12118286	       132.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/10000000/concurrent-swiss-map-16    	 3294642	       348.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/10000000/cockroachdb-16             	 8444580	       141.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkDelete/10000000/dolthub-16                 	 6810739	       191.3 ns/op	       0 B/op	       0 allocs/op
 PASS
-ok  	swiss_table	64.293s
+ok  	swiss_table	232.508s

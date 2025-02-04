@@ -10,7 +10,7 @@ import (
 )
 
 // keyCount defines the number of keys to use in benchmarks.
-const keyCount = 1 << 10
+var keyCounts = []int{100_000, 500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000}
 
 // generateKeys returns a slice of keyCount strings: "key0", "key1", ….
 func generateKeys(n int) []string {
@@ -22,117 +22,161 @@ func generateKeys(n int) []string {
 }
 
 func BenchmarkPut(b *testing.B) {
-	keys := generateKeys(keyCount)
-	mapCsmap := csmap.Create[string, int]()
-	mapCockroachDB := cockroachSwiss.New[string, int](keyCount)
-	mapDolthub := dolthubSwiss.NewMap[string, int](keyCount)
+	for _, keyCount := range keyCounts {
+		b.Run(strconv.Itoa(keyCount), func(b *testing.B) {
+			keys := generateKeys(keyCount)
+			mapStd := make(map[string]int)
+			mapCsmap := csmap.Create[string, int]()
+			mapCockroachDB := cockroachSwiss.New[string, int](keyCount)
+			mapDolthub := dolthubSwiss.NewMap[string, int](uint32(keyCount))
 
-	b.ResetTimer()
-	b.Run("concurrent-swiss-map", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			for j, key := range keys {
-				mapCsmap.Store(key, j)
-			}
-		}
-	})
+			b.ResetTimer()
+			b.Run("std", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					for j, key := range keys {
+						mapStd[key] = j
+					}
+				}
+			})
 
-	b.ResetTimer()
-	b.Run("cockroachdb", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			for j, key := range keys {
-				mapCockroachDB.Put(key, j)
-			}
-		}
-	})
+			b.ResetTimer()
+			b.Run("concurrent-swiss-map", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					for j, key := range keys {
+						mapCsmap.Store(key, j)
+					}
+				}
+			})
 
-	b.ResetTimer()
-	b.Run("dolthub", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			for j, key := range keys {
-				mapDolthub.Put(key, j)
-			}
-		}
-	})
+			b.ResetTimer()
+			b.Run("cockroachdb", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					for j, key := range keys {
+						mapCockroachDB.Put(key, j)
+					}
+				}
+			})
+
+			b.ResetTimer()
+			b.Run("dolthub", func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					for j, key := range keys {
+						mapDolthub.Put(key, j)
+					}
+				}
+			})
+		})
+	}
 }
 
 func BenchmarkGet(b *testing.B) {
-	keys := generateKeys(keyCount)
-	mapCsmap := csmap.Create[string, int]()
-	mapCockroachDB := cockroachSwiss.New[string, int](keyCount)
-	mapDolthub := dolthubSwiss.NewMap[string, int](keyCount)
+	for _, keyCount := range keyCounts {
+		b.Run(strconv.Itoa(keyCount), func(b *testing.B) {
+			keys := generateKeys(keyCount)
+			mapStd := make(map[string]int)
+			mapCsmap := csmap.Create[string, int]()
+			mapCockroachDB := cockroachSwiss.New[string, int](keyCount)
+			mapDolthub := dolthubSwiss.NewMap[string, int](uint32(keyCount))
 
-	for j, key := range keys {
-		mapCsmap.Store(key, j)
-		mapCockroachDB.Put(key, j)
-		mapDolthub.Put(key, j)
+			for j, key := range keys {
+				mapStd[key] = j
+				mapCsmap.Store(key, j)
+				mapCockroachDB.Put(key, j)
+				mapDolthub.Put(key, j)
+			}
+
+			b.ResetTimer()
+			b.Run("std", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					_, _ = mapStd[key]
+				}
+			})
+
+			b.ResetTimer()
+			b.Run("concurrent-swiss-map", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					_, _ = mapCsmap.Load(key)
+				}
+			})
+
+			b.ResetTimer()
+			b.Run("cockroachdb", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					_, _ = mapCockroachDB.Get(key)
+				}
+			})
+
+			b.ResetTimer()
+			b.Run("dolthub", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					_, _ = mapDolthub.Get(key)
+				}
+			})
+		})
 	}
-
-	b.ResetTimer()
-	b.Run("concurrent-swiss-map", func(b *testing.B) {
-		nKeys := len(keys)
-		for i := 0; i < b.N; i++ {
-			key := keys[i%nKeys]
-			_, _ = mapCsmap.Load(key)
-		}
-	})
-
-	b.ResetTimer()
-	b.Run("cockroachdb", func(b *testing.B) {
-		nKeys := len(keys)
-		for i := 0; i < b.N; i++ {
-			key := keys[i%nKeys]
-			_, _ = mapCockroachDB.Get(key)
-		}
-	})
-
-	b.ResetTimer()
-	b.Run("dolthub", func(b *testing.B) {
-		nKeys := len(keys)
-		for i := 0; i < b.N; i++ {
-			key := keys[i%nKeys]
-			_, _ = mapDolthub.Get(key)
-		}
-	})
 }
 
 func BenchmarkDelete(b *testing.B) {
-	keys := generateKeys(keyCount)
-	mapCsmap := csmap.Create[string, int]()
-	mapCockroachDB := cockroachSwiss.New[string, int](keyCount)
-	mapDolthub := dolthubSwiss.NewMap[string, int](keyCount)
+	for _, keyCount := range keyCounts {
+		b.Run(strconv.Itoa(keyCount), func(b *testing.B) {
+			keys := generateKeys(keyCount)
+			mapStd := make(map[string]int)
+			mapCsmap := csmap.Create[string, int]()
+			mapCockroachDB := cockroachSwiss.New[string, int](keyCount)
+			mapDolthub := dolthubSwiss.NewMap[string, int](uint32(keyCount))
 
-	for i := 0; i < b.N; i++ {
-		for j, key := range keys {
-			mapCsmap.Store(key, j)
-			mapCockroachDB.Put(key, j)
-			mapDolthub.Put(key, j)
-		}
+			for i := 0; i < b.N; i++ {
+				for j, key := range keys {
+					mapStd[key] = j
+					mapCsmap.Store(key, j)
+					mapCockroachDB.Put(key, j)
+					mapDolthub.Put(key, j)
+				}
+			}
+
+			b.ResetTimer()
+			b.Run("std", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					delete(mapStd, key)
+				}
+			})
+
+			b.ResetTimer()
+			b.Run("concurrent-swiss-map", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					_ = mapCsmap.Delete(key)
+				}
+			})
+
+			b.ResetTimer()
+			b.Run("cockroachdb", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					mapCockroachDB.Delete(key)
+				}
+			})
+
+			b.ResetTimer()
+			b.Run("dolthub", func(b *testing.B) {
+				nKeys := len(keys)
+				for i := 0; i < b.N; i++ {
+					key := keys[i%nKeys]
+					_ = mapDolthub.Delete(key)
+				}
+			})
+		})
 	}
-
-	b.ResetTimer()
-	b.Run("concurrent-swiss-map", func(b *testing.B) {
-		nKeys := len(keys)
-		for i := 0; i < b.N; i++ {
-			key := keys[i%nKeys]
-			_ = mapCsmap.Delete(key)
-		}
-	})
-
-	b.ResetTimer()
-	b.Run("cockroachdb", func(b *testing.B) {
-		nKeys := len(keys)
-		for i := 0; i < b.N; i++ {
-			key := keys[i%nKeys]
-			mapCockroachDB.Delete(key)
-		}
-	})
-
-	b.ResetTimer()
-	b.Run("dolthub", func(b *testing.B) {
-		nKeys := len(keys)
-		for i := 0; i < b.N; i++ {
-			key := keys[i%nKeys]
-			_ = mapDolthub.Delete(key)
-		}
-	})
 }
